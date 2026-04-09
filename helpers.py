@@ -28,11 +28,16 @@ def manga_title(manga):
 
 
 def chapter_label(manga, chapter):
-    # Strip the manga name prefix then find the chapter number
+    # Strip the manga name prefix then find the chapter number.
+    # Handles decimal chapters encoded as either "29.5" or "29-5".
     manga_pat = re.sub(r"[-_\s]+", r"[-_]+", re.escape(manga))
     stripped = re.sub(rf"(?i)^{manga_pat}[-_]*", "", chapter)
-    m = re.search(r"\d+(\.\d+)?", stripped or chapter)
-    return f"Chapter {m.group()}" if m else display_name(chapter)
+    m = re.search(r"(\d+)[-_](\d+)$|(\d+\.\d+)|\d+", stripped or chapter)
+    if not m:
+        return display_name(chapter)
+    if m.group(1):
+        return f"Chapter {m.group(1)}.{m.group(2)}"
+    return f"Chapter {m.group()}"
 
 
 def safe_name(s):
