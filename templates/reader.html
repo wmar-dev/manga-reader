@@ -26,7 +26,7 @@
     <a class="disabled">&larr; Prev Chapter</a>
     {% endif %}
 
-    <a href="/manga/{{ manga }}">{{ manga }}</a>
+    <a href="/manga/{{ manga }}">{{ display_name(manga) }}</a>
 
     {% if next_chapter_url %}
     <a href="{{ next_chapter_url }}">Next Chapter &rarr;</a>
@@ -52,6 +52,17 @@
     }, { threshold: 0.5 });
 
     pages.forEach(function(img) { observer.observe(img); });
+
+    // Chapter navigation shortcuts: [ / ] or , / .
+    document.addEventListener('keydown', function(e) {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      {% if prev_chapter_url %}
+      if (e.key === '[' || e.key === ',') window.location = '{{ prev_chapter_url }}';
+      {% endif %}
+      {% if next_chapter_url %}
+      if (e.key === ']' || e.key === '.') window.location = '{{ next_chapter_url }}';
+      {% endif %}
+    });
 
     // Mark as read when scrolled near the bottom
     window.addEventListener('scroll', function() {
