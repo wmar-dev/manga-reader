@@ -54,6 +54,10 @@ def natural_key(s):
     return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", s)]
 
 
+def display_name(s):
+    return re.sub(r"[-_]+", " ", s).title()
+
+
 def safe_name(s):
     return bool(s) and "/" not in s and ".." not in s and s == os.path.basename(s)
 
@@ -117,7 +121,7 @@ def index():
             key=natural_key,
         )
     covers = {m for m in manga_list if (MANGA_ROOT / m / "cover.webp").is_file()}
-    return render_template("index.html", manga_list=manga_list, covers=covers)
+    return render_template("index.html", manga_list=manga_list, covers=covers, display_name=display_name)
 
 
 @app.route("/manga/<manga>")
@@ -132,7 +136,7 @@ def chapter_list(manga):
         key=natural_key,
     )
     read = get_read_chapters(manga)
-    return render_template("chapters.html", manga=manga, chapters=chapters, read=read)
+    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, display_name=display_name)
 
 
 @app.route("/manga/<manga>/<chapter>")
@@ -162,6 +166,7 @@ def reader(manga, chapter):
         total=total,
         prev_chapter_url=prev_chapter_url,
         next_chapter_url=next_chapter_url,
+        display_name=display_name,
     )
 
 

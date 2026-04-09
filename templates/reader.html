@@ -2,14 +2,14 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>{{ manga }} — {{ chapter }}</title>
+  <title>{{ display_name(manga) }} — {{ display_name(chapter) }}</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body class="reader-body">
   <header class="reader-header">
     <a href="/">&larr; Manga</a>
-    <a href="/manga/{{ manga }}">{{ manga }}</a>
-    <span class="chapter-title">{{ chapter }}</span>
+    <a href="/manga/{{ manga }}">{{ display_name(manga) }}</a>
+    <span class="chapter-title">{{ display_name(chapter) }}</span>
     <span class="page-info" id="page-info">1 / {{ total }}</span>
   </header>
 
