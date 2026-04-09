@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{{ display_name(manga) }} — Chapters</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}{{ display_name(manga) }} — Chapters{% endblock %}
+
+{% block content %}
   <div class="container">
     <a class="back" href="/manga">&larr; All Manga</a>
     <div class="manga-detail">
@@ -27,5 +24,4 @@
     <p class="empty">No chapters found.</p>
     {% endif %}
   </div>
-</body>
-</html>
+{% endblock %}

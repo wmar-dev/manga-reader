@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{{ display_name(manga) }} — {{ chapter_label(manga, chapter) }}</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body class="reader-body">
+{% extends "base.html" %}
+
+{% block title %}{{ display_name(manga) }} — {{ chapter_label(manga, chapter) }}{% endblock %}
+
+{% block body_attrs %} class="reader-body"{% endblock %}
+
+{% block content %}
   <header class="reader-header">
     <a href="/manga">&larr; Manga</a>
     <a href="/manga/{{ manga }}">{{ display_name(manga) }}</a>
@@ -34,7 +33,9 @@
     <a class="disabled">Next Chapter &rarr;</a>
     {% endif %}
   </nav>
+{% endblock %}
 
+{% block foot %}
   <script>
     var pages = document.querySelectorAll('.scroll-page');
     var info = document.getElementById('page-info');
@@ -75,5 +76,4 @@
       }
     });
   </script>
-</body>
-</html>
+{% endblock %}

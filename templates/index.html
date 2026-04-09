@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Manga Server</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
   <div class="container">
     <div class="page-header">
       <h1>Continue Reading</h1>
@@ -31,5 +26,4 @@
     <p class="empty">No reading history yet. <a href="/manga">Browse manga</a> to get started.</p>
     {% endif %}
   </div>
-</body>
-</html>
+{% endblock %}
