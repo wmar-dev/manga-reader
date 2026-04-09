@@ -17,6 +17,7 @@ PORT = int(os.environ.get("PORT", 5000))
 DB_PATH = os.environ.get("DB_PATH", "manga.db")
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+COVER_NAMES = ["cover.webp", "cover.png", "cover.jpg", "cover.jpeg"]
 
 app = Flask(__name__)
 cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
@@ -72,6 +73,15 @@ def safe_name(s):
     return bool(s) and "/" not in s and ".." not in s and s == os.path.basename(s)
 
 
+def find_cover(manga):
+    for filename in COVER_NAMES:
+        p = MANGA_ROOT / manga / filename
+        if p.is_file():
+            mime, _ = mimetypes.guess_type(filename)
+            return p, mime
+    return None, None
+
+
 @cache.memoize(timeout=0)
 def get_zip_pages(zip_path):
     with zipfile.ZipFile(zip_path) as zf:
@@ -82,6 +92,24 @@ def get_zip_pages(zip_path):
             and not n.startswith("__MACOSX")
         ]
     return sorted(names, key=lambda n: natural_key(Path(n).name))
+
+
+@cache.cached(timeout=300, key_prefix="all_manga")
+def all_manga():
+    if not MANGA_ROOT.is_dir():
+        return []
+    return sorted(
+        (p.name for p in MANGA_ROOT.iterdir() if p.is_dir() and not p.name.startswith(".")),
+        key=natural_key,
+    )
+
+
+@cache.memoize(timeout=300)
+def get_chapters(manga):
+    return sorted(
+        (p.stem for p in (MANGA_ROOT / manga).glob("*.zip") if not p.name.startswith(".")),
+        key=natural_key,
+    )
 
 
 def get_read_chapters(manga):
@@ -110,52 +138,24 @@ def mark_unread(manga, chapter):
     db.commit()
 
 
+app.jinja_env.globals.update(display_name=display_name, chapter_label=chapter_label)
+
+
 # --- Routes ---
-
-COVER_FORMATS = [("cover.webp", "image/webp"), ("cover.png", "image/png"), ("cover.jpg", "image/jpeg"), ("cover.jpeg", "image/jpeg")]
-
-
-def find_cover(manga):
-    for filename, _ in COVER_FORMATS:
-        p = MANGA_ROOT / manga / filename
-        if p.is_file():
-            return p
-    return None
-
 
 @app.route("/cover/<manga>")
 def cover(manga):
     if not safe_name(manga):
         abort(400)
-    cover_path = find_cover(manga)
+    cover_path, mime = find_cover(manga)
     if cover_path is None:
         abort(404)
-    mime = next(mime for fn, mime in COVER_FORMATS if cover_path.name == fn)
     return send_file(cover_path, mimetype=mime, max_age=86400)
-
-
-@cache.cached(timeout=300, key_prefix="all_manga")
-def all_manga():
-    if not MANGA_ROOT.is_dir():
-        return []
-    return sorted(
-        (p.name for p in MANGA_ROOT.iterdir() if p.is_dir() and not p.name.startswith(".")),
-        key=natural_key,
-    )
-
-
-@cache.memoize(timeout=300)
-def get_chapters(manga):
-    return sorted(
-        (p.stem for p in (MANGA_ROOT / manga).glob("*.zip") if not p.name.startswith(".")),
-        key=natural_key,
-    )
 
 
 @app.route("/")
 def index():
     db = get_db()
-    # Manga with read chapters, ordered by most recently read
     rows = db.execute("""
         SELECT manga, MAX(read_at) as last_read
         FROM read_chapters
@@ -172,20 +172,21 @@ def index():
         read = get_read_chapters(manga)
         unread = [ch for ch in chapters if ch not in read]
         if unread:
+            cover_path, _ = find_cover(manga)
             recommendations.append({
                 "manga": manga,
                 "next_chapter": unread[0],
-                "has_cover": find_cover(manga) is not None,
+                "has_cover": cover_path is not None,
             })
 
-    return render_template("index.html", recommendations=recommendations, display_name=display_name, chapter_label=chapter_label)
+    return render_template("index.html", recommendations=recommendations)
 
 
 @app.route("/manga")
 def directory():
     manga_list = all_manga()
-    covers = {m for m in manga_list if find_cover(m) is not None}
-    return render_template("directory.html", manga_list=manga_list, covers=covers, display_name=display_name)
+    covers = {m for m in manga_list if find_cover(m)[0] is not None}
+    return render_template("directory.html", manga_list=manga_list, covers=covers)
 
 
 @app.route("/manga/<manga>")
@@ -197,8 +198,8 @@ def chapter_list(manga):
         abort(404)
     chapters = get_chapters(manga)
     read = get_read_chapters(manga)
-    has_cover = find_cover(manga) is not None
-    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, has_cover=has_cover, display_name=display_name, chapter_label=chapter_label)
+    cover_path, _ = find_cover(manga)
+    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, has_cover=cover_path is not None)
 
 
 @app.route("/manga/<manga>/<chapter>")
@@ -225,8 +226,6 @@ def reader(manga, chapter):
         total=total,
         prev_chapter_url=prev_chapter_url,
         next_chapter_url=next_chapter_url,
-        display_name=display_name,
-        chapter_label=chapter_label,
     )
 
 
