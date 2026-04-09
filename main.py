@@ -96,7 +96,7 @@ def get_chapters(manga):
 
 app.jinja_env.globals.update(display_name=display_name, chapter_label=chapter_label)
 
-from routes import bp  # noqa: E402 — imported after app/cache are defined
+from views import bp  # noqa: E402 — imported after app/cache are defined
 app.register_blueprint(bp)
 
 
