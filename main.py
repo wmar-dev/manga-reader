@@ -21,7 +21,7 @@ cache.init_app(app, config={"CACHE_TYPE": "SimpleCache"})
 
 app.jinja_env.globals.update(display_name=display_name, chapter_label=chapter_label)
 
-from views import bp  # noqa: E402 — imported after app/cache are defined
+from routes import bp  # noqa: E402 — imported after app/cache are defined
 app.register_blueprint(bp)
 
 
