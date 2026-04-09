@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ manga }} — {{ chapter }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="reader-body">
+  <header class="reader-header">
+    <a href="/">&larr; Manga</a>
+    <a href="/manga/{{ manga }}">{{ manga }}</a>
+    <span class="chapter-title">{{ chapter }}</span>
+    <span class="page-info" id="page-info">1 / {{ total }}</span>
+  </header>
+
+  <main class="scroll-reader">
+    {% for p in range(1, total + 1) %}
+    <img class="scroll-page" data-page="{{ p }}" src="/img/{{ manga }}/{{ chapter }}/{{ p }}" alt="Page {{ p }}" loading="{{ 'eager' if p <= 3 else 'lazy' }}">
+    {% endfor %}
+  </main>
+
+  <nav class="reader-nav">
+    {% if prev_chapter_url %}
+    <a href="{{ prev_chapter_url }}">&larr; Prev Chapter</a>
+    {% else %}
+    <a class="disabled">&larr; Prev Chapter</a>
+    {% endif %}
+
+    <a href="/manga/{{ manga }}">{{ manga }}</a>
+
+    {% if next_chapter_url %}
+    <a href="{{ next_chapter_url }}">Next Chapter &rarr;</a>
+    {% else %}
+    <a class="disabled">Next Chapter &rarr;</a>
+    {% endif %}
+  </nav>
+
+  <script>
+    var pages = document.querySelectorAll('.scroll-page');
+    var info = document.getElementById('page-info');
+    var total = {{ total }};
+    var marked = false;
+
+    // Update page indicator based on which image is most visible
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var p = parseInt(entry.target.dataset.page);
+          info.textContent = p + ' / ' + total;
+        }
+      });
+    }, { threshold: 0.5 });
+
+    pages.forEach(function(img) { observer.observe(img); });
+
+    // Mark as read when scrolled near the bottom
+    window.addEventListener('scroll', function() {
+      if (marked) return;
+      var scrolled = window.scrollY + window.innerHeight;
+      var height = document.documentElement.scrollHeight;
+      if (scrolled >= height - 200) {
+        marked = true;
+        fetch('/manga/{{ manga }}/{{ chapter }}/read', { method: 'POST' });
+      }
+    });
+  </script>
+</body>
+</html>

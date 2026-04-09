@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ manga }} — Chapters</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="/">&larr; All Manga</a>
+    <h1>{{ manga }}</h1>
+    {% if chapters %}
+    <ul class="list">
+      {% for ch in chapters %}
+      <li class="chapter-item">
+        <a href="/manga/{{ manga }}/{{ ch }}" class="{{ 'read' if ch in read else 'unread' }}">{{ ch }}</a>
+        {% if ch in read %}<span class="read-badge">Read</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty">No chapters found.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

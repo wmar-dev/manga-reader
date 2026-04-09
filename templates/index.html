@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Manga Server</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Manga</h1>
+    {% if manga_list %}
+    <ul class="list">
+      {% for manga in manga_list %}
+      <li><a href="/manga/{{ manga }}">{{ manga }}</a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty">No manga found. Add zip files under <code>manga/{title}/{chapter}.zip</code>.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

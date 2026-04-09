@@ -1,0 +1,162 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #111;
+  color: #eee;
+  font-family: sans-serif;
+}
+
+/* Index & Chapters */
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+h1 {
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.back {
+  display: inline-block;
+  color: #888;
+  text-decoration: none;
+  font-size: 0.9em;
+  margin-bottom: 16px;
+}
+
+.back:hover { text-decoration: underline; }
+
+.list {
+  list-style: none;
+}
+
+.list li {
+  margin: 8px 0;
+}
+
+.chapter-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.list a {
+  color: #4af;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+
+.list a:hover { text-decoration: underline; }
+
+.list a.read {
+  color: #888;
+}
+
+.read-badge {
+  font-size: 0.75em;
+  color: #5a5;
+  border: 1px solid #5a5;
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+
+.empty { color: #666; }
+
+code {
+  background: #222;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Reader */
+.reader-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.reader-header {
+  background: #1a1a1a;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.reader-header a {
+  color: #4af;
+  text-decoration: none;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.reader-header a:hover { text-decoration: underline; }
+
+.chapter-title {
+  flex: 1;
+  font-size: 0.95em;
+  color: #ccc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-info {
+  color: #888;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.scroll-reader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scroll-page {
+  display: block;
+  max-width: 800px;
+  width: 100%;
+}
+
+.reader-nav {
+  background: #1a1a1a;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.reader-nav a {
+  color: #4af;
+  text-decoration: none;
+  padding: 6px 18px;
+  border: 1px solid #4af;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.reader-nav a:hover {
+  background: #4af;
+  color: #111;
+}
+
+.reader-nav a.disabled {
+  color: #444;
+  border-color: #444;
+  pointer-events: none;
+}
+
+.page-count {
+  color: #888;
+  font-size: 0.9em;
+}
