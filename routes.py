@@ -56,7 +56,9 @@ def chapter_list(manga):
     chapters = get_chapters(manga)
     read = get_read_chapters(manga)
     cover_path, _ = find_cover(manga)
-    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, has_cover=cover_path is not None)
+    unread = [ch for ch in chapters if ch not in read]
+    next_unread = unread[0] if unread else None
+    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, has_cover=cover_path is not None, next_unread=next_unread)
 
 
 @bp.route("/manga/<manga>/<chapter>")

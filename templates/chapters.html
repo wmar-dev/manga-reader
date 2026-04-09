@@ -9,7 +9,12 @@
       {% if has_cover %}
       <img src="/cover/{{ manga }}" alt="{{ manga_title(manga) }}" class="detail-cover">
       {% endif %}
-      <h1>{{ manga_title(manga) }}</h1>
+      <div class="manga-detail-info">
+        <h1>{{ manga_title(manga) }}</h1>
+        {% if next_unread %}
+        <a class="btn-read" href="/manga/{{ manga }}/{{ next_unread }}">Read</a>
+        {% endif %}
+      </div>
     </div>
     {% if chapters %}
     <ul class="list">
