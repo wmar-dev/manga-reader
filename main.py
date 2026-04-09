@@ -144,7 +144,8 @@ def chapter_list(manga):
         key=natural_key,
     )
     read = get_read_chapters(manga)
-    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, display_name=display_name, chapter_label=chapter_label)
+    has_cover = (MANGA_ROOT / manga / "cover.webp").is_file()
+    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, has_cover=has_cover, display_name=display_name, chapter_label=chapter_label)
 
 
 @app.route("/manga/<manga>/<chapter>")

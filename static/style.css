@@ -78,6 +78,26 @@ h1 {
   word-break: break-word;
 }
 
+.manga-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.manga-detail h1 {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.detail-cover {
+  width: 160px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  display: block;
+}
+
 .chapter-item {
   display: flex;
   align-items: center;

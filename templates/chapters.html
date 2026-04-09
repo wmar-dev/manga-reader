@@ -8,7 +8,12 @@
 <body>
   <div class="container">
     <a class="back" href="/">&larr; All Manga</a>
-    <h1>{{ display_name(manga) }}</h1>
+    <div class="manga-detail">
+      {% if has_cover %}
+      <img src="/cover/{{ manga }}" alt="{{ display_name(manga) }}" class="detail-cover">
+      {% endif %}
+      <h1>{{ display_name(manga) }}</h1>
+    </div>
     {% if chapters %}
     <ul class="list">
       {% for ch in chapters %}
