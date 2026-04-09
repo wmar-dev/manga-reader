@@ -119,17 +119,56 @@ def cover(manga):
     return send_file(cover_path, mimetype="image/webp", max_age=86400)
 
 
+def all_manga():
+    if not MANGA_ROOT.is_dir():
+        return []
+    return sorted(
+        (p.name for p in MANGA_ROOT.iterdir() if p.is_dir() and not p.name.startswith(".")),
+        key=natural_key,
+    )
+
+
+def get_chapters(manga):
+    return sorted(
+        (p.stem for p in (MANGA_ROOT / manga).glob("*.zip") if not p.name.startswith(".")),
+        key=natural_key,
+    )
+
+
 @app.route("/")
 def index():
-    if not MANGA_ROOT.is_dir():
-        manga_list = []
-    else:
-        manga_list = sorted(
-            (p.name for p in MANGA_ROOT.iterdir() if p.is_dir() and not p.name.startswith(".")),
-            key=natural_key,
-        )
+    db = get_db()
+    # Manga with read chapters, ordered by most recently read
+    rows = db.execute("""
+        SELECT manga, MAX(read_at) as last_read
+        FROM read_chapters
+        GROUP BY manga
+        ORDER BY last_read DESC
+    """).fetchall()
+
+    recommendations = []
+    for row in rows:
+        manga = row["manga"]
+        if not (MANGA_ROOT / manga).is_dir():
+            continue
+        chapters = get_chapters(manga)
+        read = get_read_chapters(manga)
+        unread = [ch for ch in chapters if ch not in read]
+        if unread:
+            recommendations.append({
+                "manga": manga,
+                "next_chapter": unread[0],
+                "has_cover": (MANGA_ROOT / manga / "cover.webp").is_file(),
+            })
+
+    return render_template("index.html", recommendations=recommendations, display_name=display_name, chapter_label=chapter_label)
+
+
+@app.route("/manga")
+def directory():
+    manga_list = all_manga()
     covers = {m for m in manga_list if (MANGA_ROOT / m / "cover.webp").is_file()}
-    return render_template("index.html", manga_list=manga_list, covers=covers, display_name=display_name)
+    return render_template("directory.html", manga_list=manga_list, covers=covers, display_name=display_name)
 
 
 @app.route("/manga/<manga>")
@@ -139,10 +178,7 @@ def chapter_list(manga):
     manga_dir = MANGA_ROOT / manga
     if not manga_dir.is_dir():
         abort(404)
-    chapters = sorted(
-        (p.stem for p in manga_dir.glob("*.zip") if not p.name.startswith(".")),
-        key=natural_key,
-    )
+    chapters = get_chapters(manga)
     read = get_read_chapters(manga)
     has_cover = (MANGA_ROOT / manga / "cover.webp").is_file()
     return render_template("chapters.html", manga=manga, chapters=chapters, read=read, has_cover=has_cover, display_name=display_name, chapter_label=chapter_label)
@@ -160,10 +196,7 @@ def reader(manga, chapter):
     if total == 0:
         abort(404)
 
-    chapters = sorted(
-        (p.stem for p in (MANGA_ROOT / manga).glob("*.zip") if not p.name.startswith(".")),
-        key=natural_key,
-    )
+    chapters = get_chapters(manga)
     idx = chapters.index(chapter) if chapter in chapters else -1
     prev_chapter_url = f"/manga/{manga}/{chapters[idx - 1]}" if idx > 0 else None
     next_chapter_url = f"/manga/{manga}/{chapters[idx + 1]}" if idx >= 0 and idx < len(chapters) - 1 else None

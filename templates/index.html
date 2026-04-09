@@ -7,24 +7,28 @@
 </head>
 <body>
   <div class="container">
-    <h1>Manga</h1>
-    {% if manga_list %}
+    <div class="page-header">
+      <h1>Continue Reading</h1>
+      <a href="/manga" class="browse-link">Browse All &rarr;</a>
+    </div>
+    {% if recommendations %}
     <ul class="manga-grid">
-      {% for manga in manga_list %}
+      {% for rec in recommendations %}
       <li>
-        <a href="/manga/{{ manga }}" class="manga-card">
-          {% if manga in covers %}
-          <img src="/cover/{{ manga }}" alt="{{ manga }}" class="manga-cover">
+        <a href="/manga/{{ rec.manga }}/{{ rec.next_chapter }}" class="manga-card">
+          {% if rec.has_cover %}
+          <img src="/cover/{{ rec.manga }}" alt="{{ display_name(rec.manga) }}" class="manga-cover">
           {% else %}
           <div class="manga-cover manga-cover-placeholder"></div>
           {% endif %}
-          <span class="manga-title">{{ display_name(manga) }}</span>
+          <span class="manga-title">{{ display_name(rec.manga) }}</span>
+          <span class="manga-next">{{ chapter_label(rec.manga, rec.next_chapter) }}</span>
         </a>
       </li>
       {% endfor %}
     </ul>
     {% else %}
-    <p class="empty">No manga found. Add zip files under <code>manga/{title}/{chapter}.zip</code>.</p>
+    <p class="empty">No reading history yet. <a href="/manga">Browse manga</a> to get started.</p>
     {% endif %}
   </div>
 </body>
