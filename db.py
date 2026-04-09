@@ -14,11 +14,13 @@ def get_db():
     if "db" not in g:
         g.db = sqlite3.connect(DB_PATH)
         g.db.row_factory = sqlite3.Row
+        g.db.execute("PRAGMA journal_mode=WAL")
     return g.db
 
 
 def init_db():
     with sqlite3.connect(DB_PATH) as db:
+        db.execute("PRAGMA journal_mode=WAL")
         db.execute("""
             CREATE TABLE IF NOT EXISTS read_chapters (
                 manga   TEXT NOT NULL,
