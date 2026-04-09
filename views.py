@@ -3,7 +3,7 @@ import zipfile
 
 from flask import Blueprint, abort, make_response, render_template, send_file
 
-from db import get_db, get_read_chapters, mark_read, mark_unread
+from db import get_read_chapters, get_recently_read, mark_read, mark_unread
 from helpers import MANGA_ROOT, find_cover, get_chapters, get_zip_pages, all_manga, safe_name
 
 bp = Blueprint("manga", __name__)
@@ -21,17 +21,8 @@ def cover(manga):
 
 @bp.route("/")
 def index():
-    db = get_db()
-    rows = db.execute("""
-        SELECT manga, MAX(read_at) as last_read
-        FROM read_chapters
-        GROUP BY manga
-        ORDER BY last_read DESC
-    """).fetchall()
-
     recommendations = []
-    for row in rows:
-        manga = row["manga"]
+    for manga in get_recently_read():
         if not (MANGA_ROOT / manga).is_dir():
             continue
         chapters = get_chapters(manga)

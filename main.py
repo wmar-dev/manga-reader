@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask, g
+from flask import Flask
 
 import db as db_module
 from helpers import cache, display_name, chapter_label
@@ -17,12 +17,6 @@ db_module.set_db_path(DB_PATH)
 app = Flask(__name__)
 cache.init_app(app, config={"CACHE_TYPE": "SimpleCache"})
 
-
-@app.teardown_appcontext
-def close_db(_exc):
-    db = g.pop("db", None)
-    if db is not None:
-        db.close()
 
 
 app.jinja_env.globals.update(display_name=display_name, chapter_label=chapter_label)

@@ -1,6 +1,5 @@
 import sqlite3
-
-from flask import g
+from contextlib import contextmanager
 
 DB_PATH: str = "manga.db"
 
@@ -10,17 +9,19 @@ def set_db_path(path: str):
     DB_PATH = path
 
 
+@contextmanager
 def get_db():
-    if "db" not in g:
-        g.db = sqlite3.connect(DB_PATH)
-        g.db.row_factory = sqlite3.Row
-        g.db.execute("PRAGMA journal_mode=WAL")
-    return g.db
+    db = sqlite3.connect(DB_PATH)
+    db.row_factory = sqlite3.Row
+    db.execute("PRAGMA journal_mode=WAL")
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 def init_db():
-    with sqlite3.connect(DB_PATH) as db:
-        db.execute("PRAGMA journal_mode=WAL")
+    with get_db() as db:
         db.execute("""
             CREATE TABLE IF NOT EXISTS read_chapters (
                 manga   TEXT NOT NULL,
@@ -29,13 +30,25 @@ def init_db():
                 PRIMARY KEY (manga, chapter)
             )
         """)
+        db.commit()
+
+
+def get_recently_read():
+    with get_db() as db:
+        rows = db.execute("""
+            SELECT manga, MAX(read_at) as last_read
+            FROM read_chapters
+            GROUP BY manga
+            ORDER BY last_read DESC
+        """).fetchall()
+    return [row["manga"] for row in rows]
 
 
 def get_read_chapters(manga):
-    db = get_db()
-    rows = db.execute(
-        "SELECT chapter FROM read_chapters WHERE manga = ?", (manga,)
-    ).fetchall()
+    with get_db() as db:
+        rows = db.execute(
+            "SELECT chapter FROM read_chapters WHERE manga = ?", (manga,)
+        ).fetchall()
     return {row["chapter"] for row in rows}
 
 
@@ -45,6 +58,7 @@ def mark_read(manga, chapter):
             "INSERT OR REPLACE INTO read_chapters (manga, chapter) VALUES (?, ?)",
             (manga, chapter),
         )
+        db.commit()
 
 
 def mark_unread(manga, chapter):
@@ -53,3 +67,4 @@ def mark_unread(manga, chapter):
             "DELETE FROM read_chapters WHERE manga = ? AND chapter = ?",
             (manga, chapter),
         )
+        db.commit()
