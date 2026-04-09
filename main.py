@@ -112,7 +112,7 @@ def mark_unread(manga, chapter):
 
 # --- Routes ---
 
-COVER_FORMATS = [("cover.webp", "image/webp"), ("cover.png", "image/png"), ("cover.jpg", "image/jpeg")]
+COVER_FORMATS = [("cover.webp", "image/webp"), ("cover.png", "image/png"), ("cover.jpg", "image/jpeg"), ("cover.jpeg", "image/jpeg")]
 
 
 def find_cover(manga):
