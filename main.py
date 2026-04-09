@@ -62,7 +62,9 @@ def get_zip_pages(zip_path):
     with zipfile.ZipFile(zip_path) as zf:
         names = [
             n for n in zf.namelist()
-            if Path(n).suffix.lower() in IMAGE_EXTS and not n.startswith("__MACOSX")
+            if Path(n).suffix.lower() in IMAGE_EXTS
+            and not any(part.startswith(".") for part in Path(n).parts)
+            and not n.startswith("__MACOSX")
         ]
     return sorted(names, key=lambda n: natural_key(Path(n).name))
 
@@ -101,7 +103,7 @@ def index():
         manga_list = []
     else:
         manga_list = sorted(
-            (p.name for p in MANGA_ROOT.iterdir() if p.is_dir()),
+            (p.name for p in MANGA_ROOT.iterdir() if p.is_dir() and not p.name.startswith(".")),
             key=natural_key,
         )
     return render_template("index.html", manga_list=manga_list)
@@ -115,7 +117,7 @@ def chapter_list(manga):
     if not manga_dir.is_dir():
         abort(404)
     chapters = sorted(
-        (p.stem for p in manga_dir.glob("*.zip")),
+        (p.stem for p in manga_dir.glob("*.zip") if not p.name.startswith(".")),
         key=natural_key,
     )
     read = get_read_chapters(manga)
@@ -135,7 +137,7 @@ def reader(manga, chapter):
         abort(404)
 
     chapters = sorted(
-        (p.stem for p in (MANGA_ROOT / manga).glob("*.zip")),
+        (p.stem for p in (MANGA_ROOT / manga).glob("*.zip") if not p.name.startswith(".")),
         key=natural_key,
     )
     idx = chapters.index(chapter) if chapter in chapters else -1
