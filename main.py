@@ -58,6 +58,14 @@ def display_name(s):
     return re.sub(r"[-_]+", " ", s).title()
 
 
+def chapter_label(manga, chapter):
+    # Strip the manga name prefix then find the chapter number
+    manga_pat = re.sub(r"[-_\s]+", r"[-_]+", re.escape(manga))
+    stripped = re.sub(rf"(?i)^{manga_pat}[-_]*", "", chapter)
+    m = re.search(r"\d+(\.\d+)?", stripped or chapter)
+    return f"Chapter {m.group()}" if m else display_name(chapter)
+
+
 def safe_name(s):
     return bool(s) and "/" not in s and ".." not in s and s == os.path.basename(s)
 
@@ -136,7 +144,7 @@ def chapter_list(manga):
         key=natural_key,
     )
     read = get_read_chapters(manga)
-    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, display_name=display_name)
+    return render_template("chapters.html", manga=manga, chapters=chapters, read=read, display_name=display_name, chapter_label=chapter_label)
 
 
 @app.route("/manga/<manga>/<chapter>")
@@ -167,6 +175,7 @@ def reader(manga, chapter):
         prev_chapter_url=prev_chapter_url,
         next_chapter_url=next_chapter_url,
         display_name=display_name,
+        chapter_label=chapter_label,
     )
 
 
