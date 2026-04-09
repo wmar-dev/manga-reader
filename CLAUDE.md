@@ -17,19 +17,31 @@ MANGA_ROOT=/path/to/manga PORT=5001 python main.py
 
 ## Architecture
 
-Single-file Flask app ([main.py](main.py)) with Jinja2 templates in [templates/](templates/) and CSS in [static/style.css](static/style.css).
+Flask app split across:
+- [main.py](main.py) — app factory, config, registers blueprint
+- [routes.py](routes.py) — all route handlers (Blueprint)
+- [db.py](db.py) — SQLite access (short-lived connections, WAL mode)
+- [helpers.py](helpers.py) — pure helpers + Flask-Caching setup
+
+Jinja2 templates in [templates/](templates/), CSS in [static/style.css](static/style.css).
 
 **Routes:**
-- `GET /` — manga list (directories under `MANGA_ROOT`)
+- `GET /` — recommendations feed (next unread chapter per in-progress series)
+- `GET /manga` — full manga directory
 - `GET /manga/<manga>` — chapter list (`.zip` files in the manga directory)
 - `GET /manga/<manga>/<chapter>` — scroll reader (all pages stacked vertically)
+- `GET /cover/<manga>` — serves the cover image for a manga
 - `GET /img/<manga>/<chapter>/<int:page>` — streams a single image out of the zip without extracting to disk
 - `POST /manga/<manga>/<chapter>/read` — marks chapter read in SQLite
 - `DELETE /manga/<manga>/<chapter>/read` — marks chapter unread
 
 **Content discovery:** `MANGA_ROOT/{manga_name}/{chapter}.zip`. Pages inside each zip are sorted with `natural_key()` (handles `page2 < page10`). All names are validated through `safe_name()` to prevent path traversal.
 
-**Read tracking:** SQLite database (default `manga.db`, configurable via `DB_PATH` env var). The DB is initialized at startup via `init_db()`. Flask's `g` object holds the per-request connection. A chapter is marked read client-side via `fetch POST` when the user scrolls within 200px of the bottom of the reader page.
+**Read tracking:** SQLite database (default `manga.db`, configurable via `DB_PATH` env var). The DB is initialized at startup via `init_db()`. Each DB call opens and closes its own short-lived connection (no `g` object). A chapter is marked read client-side via `fetch POST` when the user scrolls within 200px of the bottom of the reader page.
+
+**DB schema:**
+- `read_chapters (manga, chapter, read_at)` — tracks which chapters have been read
+- `manga_titles (manga, title)` — optional custom display titles; falls back to `display_name()` (humanizes the folder name) when absent
 
 **Configuration** (all via `.env` or environment variables):
 - `MANGA_ROOT` — path to manga directory (default: `manga/`)

@@ -49,4 +49,5 @@ Set via environment variables or a `.env` file:
 - **Directory** — browse all manga at `/manga`
 - **Keyboard shortcuts** — navigate between chapters from the reader
 - **Cover images** — place `cover.webp`, `cover.png`, or `cover.jpg` in a manga folder to show a cover thumbnail
+- **Custom titles** — store a display title for any manga in the `manga_titles` DB table; falls back to the humanized folder name
 - **Caching** — zip scans and directory listings are cached in memory to avoid redundant disk reads
