@@ -20,7 +20,7 @@ Organize manga as zip files under a root directory:
 ```
 manga/
   My Manga/
-    cover.webp          # optional cover image
+    cover.webp          # optional cover image (also cover.png / cover.jpg)
     My Manga - 001.zip
     My Manga - 002.zip
   Another Series/
@@ -48,5 +48,5 @@ Set via environment variables or a `.env` file:
 - **Recommendations** — home page surfaces the next unread chapter for each in-progress series, ordered by most recently read
 - **Directory** — browse all manga at `/manga`
 - **Keyboard shortcuts** — navigate between chapters from the reader
-- **Cover images** — place `cover.webp` in a manga folder to show a cover thumbnail
+- **Cover images** — place `cover.webp`, `cover.png`, or `cover.jpg` in a manga folder to show a cover thumbnail
 - **Caching** — zip scans and directory listings are cached in memory to avoid redundant disk reads

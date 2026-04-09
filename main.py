@@ -112,14 +112,26 @@ def mark_unread(manga, chapter):
 
 # --- Routes ---
 
+COVER_FORMATS = [("cover.webp", "image/webp"), ("cover.png", "image/png"), ("cover.jpg", "image/jpeg")]
+
+
+def find_cover(manga):
+    for filename, _ in COVER_FORMATS:
+        p = MANGA_ROOT / manga / filename
+        if p.is_file():
+            return p
+    return None
+
+
 @app.route("/cover/<manga>")
 def cover(manga):
     if not safe_name(manga):
         abort(400)
-    cover_path = MANGA_ROOT / manga / "cover.webp"
-    if not cover_path.is_file():
+    cover_path = find_cover(manga)
+    if cover_path is None:
         abort(404)
-    return send_file(cover_path, mimetype="image/webp", max_age=86400)
+    mime = next(mime for fn, mime in COVER_FORMATS if cover_path.name == fn)
+    return send_file(cover_path, mimetype=mime, max_age=86400)
 
 
 @cache.cached(timeout=300, key_prefix="all_manga")
@@ -163,7 +175,7 @@ def index():
             recommendations.append({
                 "manga": manga,
                 "next_chapter": unread[0],
-                "has_cover": (MANGA_ROOT / manga / "cover.webp").is_file(),
+                "has_cover": find_cover(manga) is not None,
             })
 
     return render_template("index.html", recommendations=recommendations, display_name=display_name, chapter_label=chapter_label)
@@ -172,7 +184,7 @@ def index():
 @app.route("/manga")
 def directory():
     manga_list = all_manga()
-    covers = {m for m in manga_list if (MANGA_ROOT / m / "cover.webp").is_file()}
+    covers = {m for m in manga_list if find_cover(m) is not None}
     return render_template("directory.html", manga_list=manga_list, covers=covers, display_name=display_name)
 
 
@@ -185,7 +197,7 @@ def chapter_list(manga):
         abort(404)
     chapters = get_chapters(manga)
     read = get_read_chapters(manga)
-    has_cover = (MANGA_ROOT / manga / "cover.webp").is_file()
+    has_cover = find_cover(manga) is not None
     return render_template("chapters.html", manga=manga, chapters=chapters, read=read, has_cover=has_cover, display_name=display_name, chapter_label=chapter_label)
 
 
