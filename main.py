@@ -7,6 +7,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask, abort, g, make_response, render_template, send_file
+from flask_caching import Cache
 
 load_dotenv()
 
@@ -18,6 +19,7 @@ DB_PATH = os.environ.get("DB_PATH", "manga.db")
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 app = Flask(__name__)
+cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
 
 
 # --- Database ---
@@ -70,6 +72,7 @@ def safe_name(s):
     return bool(s) and "/" not in s and ".." not in s and s == os.path.basename(s)
 
 
+@cache.memoize(timeout=0)
 def get_zip_pages(zip_path):
     with zipfile.ZipFile(zip_path) as zf:
         names = [
@@ -119,6 +122,7 @@ def cover(manga):
     return send_file(cover_path, mimetype="image/webp", max_age=86400)
 
 
+@cache.cached(timeout=300, key_prefix="all_manga")
 def all_manga():
     if not MANGA_ROOT.is_dir():
         return []
@@ -128,6 +132,7 @@ def all_manga():
     )
 
 
+@cache.memoize(timeout=300)
 def get_chapters(manga):
     return sorted(
         (p.stem for p in (MANGA_ROOT / manga).glob("*.zip") if not p.name.startswith(".")),

@@ -6,5 +6,6 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "flask",
+    "flask-caching",
     "python-dotenv",
 ]
