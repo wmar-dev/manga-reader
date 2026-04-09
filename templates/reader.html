@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{ display_name(manga) }} — {{ chapter_label(manga, chapter) }}{% endblock %}
+{% block title %}{{ manga_title(manga) }} — {{ chapter_label(manga, chapter) }}{% endblock %}
 
 {% block body_attrs %} class="reader-body"{% endblock %}
 
 {% block content %}
   <header class="reader-header">
     <a href="/manga">&larr; Manga</a>
-    <a href="/manga/{{ manga }}">{{ display_name(manga) }}</a>
+    <a href="/manga/{{ manga }}">{{ manga_title(manga) }}</a>
     <span class="chapter-title">{{ chapter_label(manga, chapter) }}</span>
     <span class="page-info" id="page-info">1 / {{ total }}</span>
   </header>
@@ -25,7 +25,7 @@
     <a class="disabled">&larr; Prev Chapter</a>
     {% endif %}
 
-    <a href="/manga/{{ manga }}">{{ display_name(manga) }}</a>
+    <a href="/manga/{{ manga }}">{{ manga_title(manga) }}</a>
 
     {% if next_chapter_url %}
     <a href="{{ next_chapter_url }}">Next Chapter &rarr;</a>

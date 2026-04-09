@@ -12,11 +12,11 @@
       <li>
         <a href="/manga/{{ rec.manga }}/{{ rec.next_chapter }}" class="manga-card">
           {% if rec.has_cover %}
-          <img src="/cover/{{ rec.manga }}" alt="{{ display_name(rec.manga) }}" class="manga-cover">
+          <img src="/cover/{{ rec.manga }}" alt="{{ manga_title(rec.manga) }}" class="manga-cover">
           {% else %}
           <div class="manga-cover manga-cover-placeholder"></div>
           {% endif %}
-          <span class="manga-title">{{ display_name(rec.manga) }}</span>
+          <span class="manga-title">{{ manga_title(rec.manga) }}</span>
           <span class="manga-next">{{ chapter_label(rec.manga, rec.next_chapter) }}</span>
         </a>
       </li>

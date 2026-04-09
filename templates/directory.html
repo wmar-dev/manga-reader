@@ -14,11 +14,11 @@
       <li>
         <a href="/manga/{{ manga }}" class="manga-card">
           {% if manga in covers %}
-          <img src="/cover/{{ manga }}" alt="{{ display_name(manga) }}" class="manga-cover">
+          <img src="/cover/{{ manga }}" alt="{{ manga_title(manga) }}" class="manga-cover">
           {% else %}
           <div class="manga-cover manga-cover-placeholder"></div>
           {% endif %}
-          <span class="manga-title">{{ display_name(manga) }}</span>
+          <span class="manga-title">{{ manga_title(manga) }}</span>
         </a>
       </li>
       {% endfor %}

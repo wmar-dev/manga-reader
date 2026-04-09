@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}{{ display_name(manga) }} — Chapters{% endblock %}
+{% block title %}{{ manga_title(manga) }} — Chapters{% endblock %}
 
 {% block content %}
   <div class="container">
     <a class="back" href="/manga">&larr; All Manga</a>
     <div class="manga-detail">
       {% if has_cover %}
-      <img src="/cover/{{ manga }}" alt="{{ display_name(manga) }}" class="detail-cover">
+      <img src="/cover/{{ manga }}" alt="{{ manga_title(manga) }}" class="detail-cover">
       {% endif %}
-      <h1>{{ display_name(manga) }}</h1>
+      <h1>{{ manga_title(manga) }}</h1>
     </div>
     {% if chapters %}
     <ul class="list">

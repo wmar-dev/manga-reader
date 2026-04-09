@@ -30,7 +30,21 @@ def init_db():
                 PRIMARY KEY (manga, chapter)
             )
         """)
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS manga_titles (
+                manga       TEXT PRIMARY KEY NOT NULL,
+                title       TEXT NOT NULL
+            )
+        """)
         db.commit()
+
+
+def get_manga_title(manga):
+    with get_db() as db:
+        row = db.execute(
+            "SELECT title FROM manga_titles WHERE manga = ?", (manga,)
+        ).fetchone()
+    return row["title"] if row else None
 
 
 def get_recently_read():

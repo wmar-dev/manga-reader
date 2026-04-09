@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask
 
 import db as db_module
-from helpers import cache, display_name, chapter_label
+from helpers import cache, display_name, chapter_label, manga_title
 
 load_dotenv()
 
@@ -19,7 +19,7 @@ cache.init_app(app, config={"CACHE_TYPE": "SimpleCache"})
 
 
 
-app.jinja_env.globals.update(display_name=display_name, chapter_label=chapter_label)
+app.jinja_env.globals.update(display_name=display_name, chapter_label=chapter_label, manga_title=manga_title)
 
 from routes import bp  # noqa: E402 — imported after app/cache are defined
 app.register_blueprint(bp)

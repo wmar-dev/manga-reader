@@ -22,6 +22,11 @@ def display_name(s):
     return re.sub(r"[-_]+", " ", s).title()
 
 
+def manga_title(manga):
+    from db import get_manga_title
+    return get_manga_title(manga) or display_name(manga)
+
+
 def chapter_label(manga, chapter):
     # Strip the manga name prefix then find the chapter number
     manga_pat = re.sub(r"[-_\s]+", r"[-_]+", re.escape(manga))
