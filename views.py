@@ -4,15 +4,7 @@ import zipfile
 from flask import Blueprint, abort, make_response, render_template, send_file
 
 from db import get_db, get_read_chapters, mark_read, mark_unread
-from main import (
-    MANGA_ROOT,
-    cache,
-    find_cover,
-    get_chapters,
-    get_zip_pages,
-    all_manga,
-    safe_name,
-)
+from helpers import MANGA_ROOT, find_cover, get_chapters, get_zip_pages, all_manga, safe_name
 
 bp = Blueprint("manga", __name__)
 

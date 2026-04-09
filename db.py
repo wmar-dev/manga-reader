@@ -38,18 +38,16 @@ def get_read_chapters(manga):
 
 
 def mark_read(manga, chapter):
-    db = get_db()
-    db.execute(
-        "INSERT OR REPLACE INTO read_chapters (manga, chapter) VALUES (?, ?)",
-        (manga, chapter),
-    )
-    db.commit()
+    with get_db() as db:
+        db.execute(
+            "INSERT OR REPLACE INTO read_chapters (manga, chapter) VALUES (?, ?)",
+            (manga, chapter),
+        )
 
 
 def mark_unread(manga, chapter):
-    db = get_db()
-    db.execute(
-        "DELETE FROM read_chapters WHERE manga = ? AND chapter = ?",
-        (manga, chapter),
-    )
-    db.commit()
+    with get_db() as db:
+        db.execute(
+            "DELETE FROM read_chapters WHERE manga = ? AND chapter = ?",
+            (manga, chapter),
+        )
