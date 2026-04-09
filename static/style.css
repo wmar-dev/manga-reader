@@ -37,6 +37,47 @@ h1 {
   margin: 8px 0;
 }
 
+/* Manga grid (index page) */
+.manga-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.manga-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1a1a1a;
+  transition: transform 0.15s;
+}
+
+.manga-card:hover {
+  transform: translateY(-3px);
+}
+
+.manga-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.manga-cover-placeholder {
+  background: #2a2a2a;
+}
+
+.manga-title {
+  padding: 8px 10px;
+  font-size: 0.85em;
+  color: #eee;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
 .chapter-item {
   display: flex;
   align-items: center;

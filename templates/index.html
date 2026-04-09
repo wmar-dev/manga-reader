@@ -9,9 +9,18 @@
   <div class="container">
     <h1>Manga</h1>
     {% if manga_list %}
-    <ul class="list">
+    <ul class="manga-grid">
       {% for manga in manga_list %}
-      <li><a href="/manga/{{ manga }}">{{ manga }}</a></li>
+      <li>
+        <a href="/manga/{{ manga }}" class="manga-card">
+          {% if manga in covers %}
+          <img src="/cover/{{ manga }}" alt="{{ manga }}" class="manga-cover">
+          {% else %}
+          <div class="manga-cover manga-cover-placeholder"></div>
+          {% endif %}
+          <span class="manga-title">{{ manga }}</span>
+        </a>
+      </li>
       {% endfor %}
     </ul>
     {% else %}

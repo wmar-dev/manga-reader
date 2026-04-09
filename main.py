@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flask import Flask, abort, g, make_response, render_template
+from flask import Flask, abort, g, make_response, render_template, send_file
 
 load_dotenv()
 
@@ -97,6 +97,16 @@ def mark_unread(manga, chapter):
 
 # --- Routes ---
 
+@app.route("/cover/<manga>")
+def cover(manga):
+    if not safe_name(manga):
+        abort(400)
+    cover_path = MANGA_ROOT / manga / "cover.webp"
+    if not cover_path.is_file():
+        abort(404)
+    return send_file(cover_path, mimetype="image/webp", max_age=86400)
+
+
 @app.route("/")
 def index():
     if not MANGA_ROOT.is_dir():
@@ -106,7 +116,8 @@ def index():
             (p.name for p in MANGA_ROOT.iterdir() if p.is_dir() and not p.name.startswith(".")),
             key=natural_key,
         )
-    return render_template("index.html", manga_list=manga_list)
+    covers = {m for m in manga_list if (MANGA_ROOT / m / "cover.webp").is_file()}
+    return render_template("index.html", manga_list=manga_list, covers=covers)
 
 
 @app.route("/manga/<manga>")
