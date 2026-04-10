@@ -12,6 +12,22 @@
     <span class="page-info" id="page-info">1 / {{ total }}</span>
   </header>
 
+  <nav class="reader-nav">
+    {% if prev_chapter_url %}
+    <a href="{{ prev_chapter_url }}">&larr; Prev Chapter</a>
+    {% else %}
+    <a class="disabled">&larr; Prev Chapter</a>
+    {% endif %}
+
+    <a href="/manga/{{ manga }}">{{ manga_title(manga) }}</a>
+
+    {% if next_chapter_url %}
+    <a href="{{ next_chapter_url }}">Next Chapter &rarr;</a>
+    {% else %}
+    <a class="disabled">Next Chapter &rarr;</a>
+    {% endif %}
+  </nav>
+
   <main class="scroll-reader">
     {% for p in range(1, total + 1) %}
     <img class="scroll-page" data-page="{{ p }}" src="/img/{{ manga }}/{{ chapter }}/{{ p }}" alt="Page {{ p }}" loading="{{ 'eager' if p <= 3 else 'lazy' }}">
