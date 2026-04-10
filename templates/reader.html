@@ -9,7 +9,6 @@
     <a href="/manga">&larr; Manga</a>
     <a href="/manga/{{ manga }}">{{ manga_title(manga) }}</a>
     <span class="chapter-title">{{ chapter_label(manga, chapter) }}</span>
-    <span class="page-info" id="page-info">1 / {{ total }}</span>
   </header>
 
   <nav class="reader-nav">
@@ -30,7 +29,7 @@
 
   <main class="scroll-reader">
     {% for p in range(1, total + 1) %}
-    <img class="scroll-page" data-page="{{ p }}" src="/img/{{ manga }}/{{ chapter }}/{{ p }}" alt="Page {{ p }}" loading="{{ 'eager' if p <= 3 else 'lazy' }}">
+    <img class="scroll-page" src="/img/{{ manga }}/{{ chapter }}/{{ p }}" alt="Page {{ p }}" loading="{{ 'eager' if p <= 3 else 'lazy' }}">
     {% endfor %}
   </main>
 
@@ -53,22 +52,7 @@
 
 {% block foot %}
   <script>
-    var pages = document.querySelectorAll('.scroll-page');
-    var info = document.getElementById('page-info');
-    var total = {{ total }};
     var marked = false;
-
-    // Update page indicator based on which image is most visible
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          var p = parseInt(entry.target.dataset.page);
-          info.textContent = p + ' / ' + total;
-        }
-      });
-    }, { threshold: 0.5 });
-
-    pages.forEach(function(img) { observer.observe(img); });
 
     // Chapter navigation shortcuts: [ / ] or , / .
     document.addEventListener('keydown', function(e) {

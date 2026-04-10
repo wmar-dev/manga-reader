@@ -219,12 +219,6 @@ code {
   white-space: nowrap;
 }
 
-.page-info {
-  color: #888;
-  font-size: 0.9em;
-  white-space: nowrap;
-}
-
 .scroll-reader {
   display: flex;
   flex-direction: column;
@@ -266,9 +260,4 @@ code {
   color: #444;
   border-color: #444;
   pointer-events: none;
-}
-
-.page-count {
-  color: #888;
-  font-size: 0.9em;
 }
