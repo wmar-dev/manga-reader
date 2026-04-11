@@ -5,9 +5,13 @@ Usage:
 
 If output_dir is omitted, saves to the current directory.
 """
+import difflib
+import logging
 import sys
 import urllib.request
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 from mangadex_client.api_client import ApiClient
 from mangadex_client.configuration import Configuration
@@ -27,6 +31,18 @@ def download_cover(title: str, dest_dir: Path = Path(".")) -> Path:
         if not results.data:
             raise ValueError(f"No manga found for title: {title!r}")
         manga = results.data[0]
+        matched_title = (
+            manga.attributes.title.get("en") or next(iter(manga.attributes.title.values()), "")
+            if manga.attributes and manga.attributes.title
+            else ""
+        )
+        ratio = difflib.SequenceMatcher(None, title.lower(), matched_title.lower()).ratio()
+        if ratio < 0.95:
+            logger.warning(
+                "Skipping cover download: %r matched %r with similarity %.2f (below 0.95)",
+                title, matched_title, ratio,
+            )
+            raise ValueError(f"Title match too weak: {title!r} vs {matched_title!r} (ratio {ratio:.2f})")
         manga_id = manga.id
 
         cover_api = CoverApi(client)
