@@ -4,7 +4,7 @@ import zipfile
 from flask import Blueprint, abort, make_response, render_template, send_file
 
 from db import get_read_chapters, get_recently_read, mark_read, mark_unread
-from helpers import MANGA_ROOT, find_cover, get_chapters, get_zip_pages, all_manga, safe_name
+from helpers import MANGA_ROOT, find_cover, get_chapters, get_zip_pages, all_manga, safe_name, manga_title
 
 bp = Blueprint("manga", __name__)
 
@@ -15,7 +15,13 @@ def cover(manga):
         abort(400)
     cover_path, mime = find_cover(manga)
     if cover_path is None:
-        abort(404)
+        try:
+            from download_cover import download_cover
+            manga_dir = MANGA_ROOT / manga
+            cover_path = download_cover(manga_title(manga), manga_dir)
+            mime, _ = mimetypes.guess_type(cover_path.name)
+        except Exception:
+            abort(404)
     return send_file(cover_path, mimetype=mime, max_age=86400)
 
 
