@@ -3,8 +3,9 @@ import argparse
 import difflib
 import logging
 import sys
-import urllib.request
 from pathlib import Path
+
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,9 @@ def download_cover(title: str, dest_dir: Path = Path(".")) -> Path:
     ext = Path(file_name).suffix.lower()
     dest = dest_dir / f"cover{ext}"
     dest_dir.mkdir(parents=True, exist_ok=True)
-    urllib.request.urlretrieve(url, dest)
+    response = requests.get(url)
+    response.raise_for_status()
+    dest.write_bytes(response.content)
     return dest
 
 
