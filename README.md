@@ -57,11 +57,7 @@ Set via environment variables or a `.env` file:
 `download_cover.py` fetches a cover image from MangaDex by manga title and saves it as `cover.<ext>` in a directory of your choice.
 
 ```bash
-uv run python download_cover.py "Manga Title" [output_dir]
-```
-
-If `output_dir` is omitted it saves to the current directory. To save directly into a manga folder:
-
-```bash
 uv run python download_cover.py "My Manga" "manga/My Manga"
 ```
+
+`output_dir` is optional and defaults to the current directory. Run with `--help` for usage.

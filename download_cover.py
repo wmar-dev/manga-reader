@@ -1,10 +1,5 @@
-"""Download a manga cover from MangaDex by title.
-
-Usage:
-    python download_cover.py "Manga Title" [output_dir]
-
-If output_dir is omitted, saves to the current directory.
-"""
+"""Download a manga cover from MangaDex by title."""
+import argparse
 import difflib
 import logging
 import sys
@@ -62,13 +57,12 @@ def download_cover(title: str, dest_dir: Path = Path(".")) -> Path:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print(__doc__)
-        sys.exit(1)
-    title = sys.argv[1]
-    dest_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(".")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("title", help="Manga title to search for")
+    parser.add_argument("output_dir", nargs="?", type=Path, default=Path("."), help="Directory to save the cover (default: current directory)")
+    args = parser.parse_args()
     try:
-        path = download_cover(title, dest_dir)
+        path = download_cover(args.title, args.output_dir)
         print(f"Saved: {path}")
     except ValueError as e:
         print(f"Error: {e}")
