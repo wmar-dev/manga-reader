@@ -51,3 +51,17 @@ Set via environment variables or a `.env` file:
 - **Cover images** — place `cover.webp`, `cover.png`, or `cover.jpg` in a manga folder to show a cover thumbnail
 - **Custom titles** — store a display title for any manga in the `manga_titles` DB table; falls back to the humanized folder name
 - **Caching** — zip scans and directory listings are cached in memory to avoid redundant disk reads
+
+## Downloading covers
+
+`download_cover.py` fetches a cover image from MangaDex by manga title and saves it as `cover.<ext>` in a directory of your choice.
+
+```bash
+uv run python download_cover.py "Manga Title" [output_dir]
+```
+
+If `output_dir` is omitted it saves to the current directory. To save directly into a manga folder:
+
+```bash
+uv run python download_cover.py "My Manga" "manga/My Manga"
+```
