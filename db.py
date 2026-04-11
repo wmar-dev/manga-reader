@@ -1,16 +1,17 @@
 import sqlite3
+from collections.abc import Generator
 from contextlib import contextmanager
 
 DB_PATH: str = "manga.db"
 
 
-def set_db_path(path: str):
+def set_db_path(path: str) -> None:
     global DB_PATH
     DB_PATH = path
 
 
 @contextmanager
-def get_db():
+def get_db() -> Generator[sqlite3.Connection, None, None]:
     db = sqlite3.connect(DB_PATH)
     db.row_factory = sqlite3.Row
     db.execute("PRAGMA journal_mode=WAL")
@@ -20,7 +21,7 @@ def get_db():
         db.close()
 
 
-def init_db():
+def init_db() -> None:
     with get_db() as db:
         db.execute("""
             CREATE TABLE IF NOT EXISTS read_chapters (
@@ -39,7 +40,7 @@ def init_db():
         db.commit()
 
 
-def get_manga_title(manga):
+def get_manga_title(manga: str) -> str | None:
     with get_db() as db:
         row = db.execute(
             "SELECT title FROM manga_titles WHERE manga = ?", (manga,)
@@ -47,7 +48,7 @@ def get_manga_title(manga):
     return row["title"] if row else None
 
 
-def get_recently_read():
+def get_recently_read() -> list[str]:
     with get_db() as db:
         rows = db.execute("""
             SELECT manga, MAX(read_at) as last_read
@@ -58,7 +59,7 @@ def get_recently_read():
     return [row["manga"] for row in rows]
 
 
-def get_read_chapters(manga):
+def get_read_chapters(manga: str) -> set[str]:
     with get_db() as db:
         rows = db.execute(
             "SELECT chapter FROM read_chapters WHERE manga = ?", (manga,)
@@ -66,7 +67,7 @@ def get_read_chapters(manga):
     return {row["chapter"] for row in rows}
 
 
-def mark_read(manga, chapter):
+def mark_read(manga: str, chapter: str) -> None:
     with get_db() as db:
         db.execute(
             "INSERT OR REPLACE INTO read_chapters (manga, chapter) VALUES (?, ?)",
@@ -75,7 +76,7 @@ def mark_read(manga, chapter):
         db.commit()
 
 
-def mark_unread(manga, chapter):
+def mark_unread(manga: str, chapter: str) -> None:
     with get_db() as db:
         db.execute(
             "DELETE FROM read_chapters WHERE manga = ? AND chapter = ?",

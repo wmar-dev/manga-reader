@@ -14,20 +14,20 @@ COVER_NAMES = ["cover.webp", "cover.png", "cover.jpg", "cover.jpeg"]
 cache = Cache()
 
 
-def natural_key(s):
+def natural_key(s: str) -> list[int | str]:
     return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", s)]
 
 
-def display_name(s):
+def display_name(s: str) -> str:
     return re.sub(r"[-_]+", " ", s).title()
 
 
-def manga_title(manga):
+def manga_title(manga: str) -> str:
     from db import get_manga_title
     return get_manga_title(manga) or display_name(manga)
 
 
-def chapter_label(manga, chapter):
+def chapter_label(manga: str, chapter: str) -> str:
     # Strip the manga name prefix then find the chapter number.
     # Handles decimal chapters encoded as either "29.5" or "29-5".
     manga_pat = re.sub(r"[-_\s]+", r"[-_]+", re.escape(manga))
@@ -40,11 +40,11 @@ def chapter_label(manga, chapter):
     return f"Chapter {m.group()}"
 
 
-def safe_name(s):
+def safe_name(s: str) -> bool:
     return bool(s) and "/" not in s and ".." not in s and s == os.path.basename(s)
 
 
-def find_cover(manga):
+def find_cover(manga: str) -> tuple[Path, str | None] | tuple[None, None]:
     for filename in COVER_NAMES:
         p = MANGA_ROOT / manga / filename
         if p.is_file():
@@ -54,7 +54,7 @@ def find_cover(manga):
 
 
 @cache.memoize(timeout=0)
-def get_zip_pages(zip_path):
+def get_zip_pages(zip_path: str) -> list[str]:
     with zipfile.ZipFile(zip_path) as zf:
         names = [
             n for n in zf.namelist()
@@ -66,7 +66,7 @@ def get_zip_pages(zip_path):
 
 
 @cache.cached(timeout=300, key_prefix="all_manga")
-def all_manga():
+def all_manga() -> list[str]:
     if not MANGA_ROOT.is_dir():
         return []
     return sorted(
@@ -76,7 +76,7 @@ def all_manga():
 
 
 @cache.memoize(timeout=300)
-def get_chapters(manga):
+def get_chapters(manga: str) -> list[str]:
     return sorted(
         (p.stem for p in (MANGA_ROOT / manga).glob("*.zip") if not p.name.startswith(".")),
         key=natural_key,
