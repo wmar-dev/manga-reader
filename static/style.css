@@ -66,6 +66,23 @@ h1 {
   color: #4af;
 }
 
+.manga-filter {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #eee;
+  font-size: 0.95em;
+}
+
+.manga-filter:focus {
+  outline: none;
+  border-color: #4af;
+}
+
 /* Manga grid (index page) */
 .manga-grid {
   list-style: none;

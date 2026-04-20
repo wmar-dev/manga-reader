@@ -9,7 +9,8 @@
       <a href="/" class="browse-link">Continue Reading</a>
     </div>
     {% if manga_list %}
-    <ul class="manga-grid">
+    <input type="search" id="manga-filter" class="manga-filter" placeholder="Filter…" autocomplete="off">
+    <ul class="manga-grid" id="manga-grid">
       {% for manga in manga_list %}
       <li>
         <a href="/manga/{{ manga }}" class="manga-card">
@@ -25,6 +26,18 @@
     </ul>
     {% else %}
     <p class="empty">No manga found. Add zip files under <code>manga/{title}/{chapter}.zip</code>.</p>
+    <script>
+      const input = document.getElementById('manga-filter');
+      const items = document.querySelectorAll('#manga-grid li');
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        items.forEach(li => {
+          const title = li.querySelector('.manga-title').textContent.toLowerCase();
+          li.style.display = !q || title.includes(q) ? '' : 'none';
+        });
+      });
+      input.focus();
+    </script>
     {% endif %}
   </div>
 {% endblock %}
