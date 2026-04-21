@@ -4,7 +4,7 @@ import zipfile
 from flask import Blueprint, abort, make_response, render_template, send_file
 
 from db import get_read_chapters, get_recently_read, mark_read, mark_unread
-from helpers import MANGA_ROOT, find_cover, get_chapters, get_zip_pages, all_manga, safe_name, manga_title
+from helpers import MANGA_ROOT, cache, find_cover, get_chapters, get_zip_pages, all_manga, safe_name, manga_title
 
 bp = Blueprint("manga", __name__)
 
@@ -43,6 +43,12 @@ def index():
             })
 
     return render_template("index.html", recommendations=recommendations)
+
+
+@bp.route("/manga/cache/clear", methods=["POST"])
+def clear_manga_cache():
+    cache.delete("all_manga")
+    return ("", 204)
 
 
 @bp.route("/manga")
