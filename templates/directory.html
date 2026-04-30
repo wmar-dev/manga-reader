@@ -6,7 +6,10 @@
   <div class="container">
     <div class="page-header">
       <h1>All Manga</h1>
-      <a href="/" class="browse-link">Continue Reading</a>
+      <div style="display:flex;gap:12px;align-items:center">
+        <button id="random-btn" title="Random manga" class="icon-btn">&#x1F3B2;</button>
+        <a href="/" class="browse-link">Continue Reading</a>
+      </div>
     </div>
     {% if manga_list %}
     <input type="search" id="manga-filter" class="manga-filter" placeholder="Filter…" autocomplete="off">
@@ -35,6 +38,13 @@
         });
       });
       input.focus();
+
+      document.getElementById('random-btn').addEventListener('click', () => {
+        const visible = [...items].filter(li => li.style.display !== 'none');
+        if (!visible.length) return;
+        const pick = visible[Math.floor(Math.random() * visible.length)];
+        window.location.href = pick.querySelector('a').href;
+      });
     </script>
     {% else %}
     <p class="empty">No manga found. Add zip files under <code>manga/{title}/{chapter}.zip</code>.</p>
