@@ -126,6 +126,15 @@ h1 {
 
 .manga-cover-placeholder {
   background: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 0.8em;
+}
+
+.manga-cover-placeholder::after {
+  content: "Missing Cover";
 }
 
 .manga-title {
