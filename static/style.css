@@ -130,7 +130,7 @@ h1 {
   align-items: center;
   justify-content: center;
   color: #555;
-  font-size: 0.8em;
+  font-size: 1em;
 }
 
 .manga-cover-placeholder::after {
