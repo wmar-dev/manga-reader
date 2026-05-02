@@ -18,7 +18,7 @@
     </div>
     {% if chapters %}
     <ul class="list">
-      {% for ch in chapters %}
+      {% for ch in chapters|reverse %}
       <li class="chapter-item">
         <a href="/manga/{{ manga }}/{{ ch }}" class="{{ 'read' if ch in read else 'unread' }}">{{ chapter_label(manga, ch) }}</a>
         {% if ch in read %}<span class="read-badge">Read</span>{% endif %}
