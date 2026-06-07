@@ -14,3 +14,8 @@ dependencies = [
 
 [tool.uv.sources]
 mangadex-client = { git = "https://github.com/wmar-dev/mangadex-client.git" }
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]
