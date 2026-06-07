@@ -8,7 +8,7 @@ Requires Python 3.14+ and [uv](https://github.com/astral-sh/uv).
 
 ```bash
 uv sync
-python main.py
+make serve
 ```
 
 Open [http://localhost:5000](http://localhost:5000).
