@@ -11,6 +11,7 @@ load_dotenv()
 HOST = os.environ.get("HOST", "0.0.0.0")
 PORT = int(os.environ.get("PORT", 5000))
 DB_PATH = os.environ.get("DB_PATH", "manga.db")
+DEBUG = os.environ.get("DEBUG", "false").lower() in ("1", "true", "yes")
 
 db_module.set_db_path(DB_PATH)
 
@@ -27,4 +28,4 @@ app.register_blueprint(bp)
 
 if __name__ == "__main__":
     db_module.init_db()
-    app.run(host=HOST, port=PORT, debug=True)
+    app.run(host=HOST, port=PORT, debug=DEBUG)

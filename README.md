@@ -39,7 +39,30 @@ Set via environment variables or a `.env` file:
 | `MANGA_ROOT` | `manga/`   | Path to manga directory          |
 | `PORT`      | `5000`      | Server port                      |
 | `HOST`      | `0.0.0.0`   | Bind address                     |
-| `DB_PATH`   | `manga.db`  | SQLite database for read tracking |
+| `DB_PATH`   | `manga.db`  | SQLite database path for read tracking |
+| `DEBUG`     | `false`     | Enable Flask debug mode/reloader |
+
+## Running with Docker
+
+Set `MANGA_ROOT` (path to your manga directory on the host) and optionally `PORT` in `.env`, then:
+
+```bash
+docker compose up -d --build
+```
+
+This builds the image, mounts `MANGA_ROOT` read-only at `/manga` inside the container, and stores the read-tracking SQLite database in `./data/manga.db` on the host (bind-mounted to `/data` in the container). The app is available at `http://localhost:$PORT` (default `5000`).
+
+Equivalent `make` targets: `make docker-up`, `make docker-down`, `make docker-logs`, `make docker-build`.
+
+To run the container manually without Compose:
+
+```bash
+docker build -t manga-reader .
+docker run -d -p 5000:5000 \
+  -v /path/to/manga:/manga:ro \
+  -v ./data:/data \
+  manga-reader
+```
 
 ## Features
 
