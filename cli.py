@@ -10,17 +10,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import db
-import helpers
+from helpers import MANGA_ROOT, natural_key
 
 db.set_db_path(os.environ.get("DB_PATH", "manga.db"))
 
 
 def cmd_mark_read(args: argparse.Namespace) -> None:
     manga = args.manga
-    if not (helpers.MANGA_ROOT / manga).is_dir():
+    if not (MANGA_ROOT / manga).is_dir():
         print(f"error: manga not found: {manga}", file=sys.stderr)
         sys.exit(1)
-    chapters = helpers.get_chapters(manga)
+    chapters = sorted(
+        (p.stem for p in (MANGA_ROOT / manga).glob("*.zip") if not p.name.startswith(".")),
+        key=natural_key,
+    )
     if not chapters:
         print(f"No chapters found for {manga!r}.")
         return
