@@ -1,4 +1,4 @@
-.PHONY: test clear-cache serve debug docker-build docker-up docker-down docker-logs
+.PHONY: test clear-cache serve debug docker-build docker-up docker-down docker-logs mark-read
 
 test:
 	uv run pytest test_helpers.py -v
@@ -25,3 +25,6 @@ docker-down:
 
 docker-logs:
 	docker compose logs -f
+
+mark-read:
+	uv run python cli.py mark-read $(MANGA)
